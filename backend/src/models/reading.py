@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped,mapped_column
-from sqlalchemy import ForeignKey,String,Float,Text,UniqueConstraint
+from sqlalchemy import ForeignKey,String,Float,Integer,Text,UniqueConstraint
 from src.config.database import Base
 class PressureReading(Base):
  __tablename__='pressure_readings'
@@ -10,3 +10,4 @@ class PressureReading(Base):
  specimen_ref:Mapped[str]=mapped_column(String(80))
  pressure:Mapped[float]=mapped_column(Float)
  measurement_note:Mapped[str]=mapped_column(Text,default='')
+ version:Mapped[int]=mapped_column(Integer,default=1,server_default='1')

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped,mapped_column
-from sqlalchemy import ForeignKey,String,Float,UniqueConstraint
+from sqlalchemy import ForeignKey,String,Float,Integer,UniqueConstraint
 from src.config.database import Base
 class DoseLevel(Base):
  __tablename__='dose_levels'
@@ -8,3 +8,4 @@ class DoseLevel(Base):
  study_id:Mapped[int]=mapped_column(ForeignKey('flow_studies.id'))
  label:Mapped[str]=mapped_column(String(80))
  flow:Mapped[float]=mapped_column(Float)
+ version:Mapped[int]=mapped_column(Integer,default=1,server_default='1')

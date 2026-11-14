@@ -1,6 +1,10 @@
 export type User={id:number;email:string;name:string;role:string};
-export type Study={id:number;name:string;filename:string;description:string;direction:string};
-export type Level={id:number;study_id:number;label:string;flow:number};
-export type Reading={id:number;study_id:number;level_id:number;specimen_ref:string;pressure:number;measurement_note:string};
-export type Run={id:number;study_id:number;name:string;config:any;result:any;status:string;error?:string};
+export type Study={id:number;name:string;filename:string;description:string;direction:string;current_version:number};
+export type Level={id:number;study_id:number;label:string;flow:number;version:number};
+export type Reading={id:number;study_id:number;level_id:number;specimen_ref:string;pressure:number;measurement_note:string;version:number};
+export type Run={id:number;study_id:number;source_version:number|null;name:string;config:any;result:any;status:string;error?:string};
 export type Note={id:number;run_id:number;name:string;interpretation:string;next_step:string;proposed_flow:number;result_snapshot:any;status:string;review_note:string};
+export type BatchEntry={kind:string;specimen_ref?:string;level_label?:string;level_id?:number;version?:number;action?:string;flow?:number;label?:string;reason?:string;message?:string};
+export type BatchReport={added:BatchEntry[];corrected:BatchEntry[];ignored:BatchEntry[];levels_created:BatchEntry[];levels_corrected:BatchEntry[]};
+export type BatchResult={batch_id:number|null;study_id:number;idempotency_key:string|null;status:string;base_version:number|null;applied_version:number|null;version:number;report:BatchReport;replayed:boolean;reason?:string};
+export type Revision={id:number;study_id:number;level_id:number;reading_id?:number;specimen_ref?:string;level_label?:string;level_flow?:number;label?:string;flow?:number;pressure?:number;measurement_note?:string;version:number;batch_id:number|null;revision_source:string;created_by:string;created_at:string};

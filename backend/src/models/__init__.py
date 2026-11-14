@@ -5,3 +5,6 @@ from .level import DoseLevel
 from .reading import PressureReading
 from .run import MonotoneRun
 from .note import ValidationNote
+from .batch import DataBatch
+from .level_revision import DoseLevelRevision
+from .reading_revision import PressureReadingRevision

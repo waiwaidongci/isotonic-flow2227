@@ -1,5 +1,16 @@
 -- Initial domain schema is defined by SQLAlchemy metadata; startup uses create_all.
--- flow_studies(name UNIQUE,direction); dose_levels(study_id,label UNIQUE,flow)
--- pressure_readings(study_id,specimen_ref UNIQUE,level_id,pressure,measurement_note)
--- monotone_runs(config JSON,result JSON,status), validation_notes(result_snapshot JSON,status)
--- users(email UNIQUE), audit_logs. No production migration runner is claimed.
+-- flow_studies(name UNIQUE,direction,current_version)
+-- dose_levels(study_id,label UNIQUE,flow,version)
+-- pressure_readings(study_id,specimen_ref UNIQUE,level_id,pressure,measurement_note,version)
+-- monotone_runs(config JSON,result JSON,status,source_version), validation_notes(result_snapshot JSON,status)
+-- users(email UNIQUE), audit_logs.
+--
+-- Versioned supplement batches (002):
+-- data_batches(study_id,idempotency_key UNIQUE,payload_hash,base_version,applied_version,status,report JSON)
+-- dose_level_revisions(level_id,version UNIQUE,label,flow,revision_source,batch_id)
+-- pressure_reading_revisions(reading_id,version UNIQUE,specimen_ref,...,revision_source,batch_id)
+-- Revisions are append-only: every merge writes the new row plus prior-version history,
+-- so old versions remain readable after a later correction. Startup backfills v1 history
+-- for studies imported before versioning existed.
+-- No production migration runner is claimed; for an existing database add the
+-- current_version/version columns and the three tables above before deploying.

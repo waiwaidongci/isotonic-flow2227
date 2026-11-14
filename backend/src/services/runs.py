@@ -11,7 +11,7 @@ def create_run(db,data,actor):
  try:validate_source(levels,readings);validate_config(config)
  except ValueError as e:raise HTTPException(422,str(e))
  if db.scalar(select(MonotoneRun).where(MonotoneRun.name==data.name)):raise HTTPException(409,'运行名称已存在')
- run=MonotoneRun(study_id=data.study_id,name=data.name,config=config,created_by=actor);db.add(run);db.commit()
+ run=MonotoneRun(study_id=data.study_id,name=data.name,config=config,created_by=actor,source_version=study['current_version']);db.add(run);db.commit()
  try:
   from src.worker import fit_run
   fit_run.delay(run.id)

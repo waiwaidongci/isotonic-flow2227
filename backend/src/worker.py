@@ -16,7 +16,10 @@ def fit_run(id):
   if not run or run.status=='completed':return
   run.status='running';db.commit()
   try:
-   study,levels,readings=source_data(db,run.study_id);result=analyze(study,levels,readings,run.config)
+   study,levels,readings=source_data(db,run.study_id)
+   if run.source_version is not None and study['current_version']!=run.source_version:
+    raise ValueError('研究已从 v%s 推进到 v%s，排队运行不再对应冻结输入；请重新创建拟合'%(run.source_version,study['current_version']))
+   result=analyze(study,levels,readings,run.config)
    Path(ARTIFACT_DIR).mkdir(parents=True,exist_ok=True);Path(ARTIFACT_DIR,f'flow-{id}.json').write_text(json.dumps(result,ensure_ascii=False,allow_nan=False));run.result=result;run.status='completed';run.error=None;db.commit();record(db,'worker','run.completed',{'run_id':id,'lodo_mse':result['lodo']['mse']})
   except Exception as error:
    db.rollback();run=db.get(MonotoneRun,id);run.status='failed';run.error=str(error)[:1000];db.commit();record(db,'worker','run.failed',{'run_id':id,'error':run.error})

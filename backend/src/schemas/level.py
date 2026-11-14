@@ -9,3 +9,4 @@ class LevelPatch(BaseModel):
  model_config=ConfigDict(allow_inf_nan=False)
  label:str=Field(min_length=1,max_length=80)
  flow:float=Field(ge=0,le=1000)
+ expected_version:int|None=Field(default=None,ge=1)

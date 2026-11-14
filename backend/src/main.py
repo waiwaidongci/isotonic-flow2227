@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from redis import Redis
-from sqlalchemy import text
+from sqlalchemy import text,select
 from src.config.database import Base,engine
 from src.config.settings import REDIS_URL,SEED_DEMO
 from src.models import *
@@ -14,7 +14,17 @@ from src.middlewares.request_id import RequestIDMiddleware
 from src.routes import auth,studies,runs,notes,audit
 @asynccontextmanager
 async def lifespan(app):
+ from src.config.schema import ensure_version_columns
+ ensure_version_columns()
  Base.metadata.create_all(engine)
+ try:
+  from src.config.database import SessionLocal
+  from src.models import FlowStudy
+  from src.services.batches import baseline_revisions
+  with SessionLocal() as db:
+   for study_id in db.scalars(select(FlowStudy.id)):
+    baseline_revisions(db,study_id)
+ except Exception:logging.exception('baseline revision backfill failed; startup continues')
  if SEED_DEMO:
   try:
    from scripts.seed_demo import seed
